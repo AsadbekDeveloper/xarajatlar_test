@@ -57,7 +57,11 @@ class _ParticipantSelectorState extends State<ParticipantSelector> {
           children: [
             for (final person in widget.people)
               FilterChip(
-                label: Text(person.name),
+                label: Text(
+                  person.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 selected: widget.selectedIds.contains(person.id),
                 onSelected: (_) => _toggle(person.id),
               ),

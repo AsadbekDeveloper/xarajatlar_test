@@ -16,3 +16,12 @@ class AppRadius {
   static const card = 12.0;
   static const button = 10.0;
 }
+
+/// Layout bounds — keeps content readable on viewports wider than a phone
+/// (e.g. a resized browser window) instead of stretching edge-to-edge.
+class AppLayout {
+  const AppLayout._();
+
+  static const maxContentWidth = 480.0;
+  static const splitAmountFieldWidth = 120.0;
+}

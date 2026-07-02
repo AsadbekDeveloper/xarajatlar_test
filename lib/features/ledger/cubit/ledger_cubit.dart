@@ -70,7 +70,10 @@ class LedgerCubit extends Cubit<LedgerState> {
   void _refresh() {
     if (isClosed) return;
     emit(
-      LedgerState(people: _repository.getPeople(), expenses: _repository.getExpenses()),
+      LedgerState(
+        people: _repository.getPeople(),
+        expenses: _repository.getExpenses(),
+      ),
     );
   }
 }

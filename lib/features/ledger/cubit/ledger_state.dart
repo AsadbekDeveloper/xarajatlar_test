@@ -15,10 +15,11 @@ class LedgerState extends Equatable {
   final List<Person> people;
   final List<Expense> expenses;
 
-  LedgerState copyWith({List<Person>? people, List<Expense>? expenses}) => LedgerState(
-    people: people ?? this.people,
-    expenses: expenses ?? this.expenses,
-  );
+  LedgerState copyWith({List<Person>? people, List<Expense>? expenses}) =>
+      LedgerState(
+        people: people ?? this.people,
+        expenses: expenses ?? this.expenses,
+      );
 
   @override
   List<Object?> get props => [people, expenses];

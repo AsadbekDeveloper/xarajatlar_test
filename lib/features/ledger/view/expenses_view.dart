@@ -22,7 +22,10 @@ class ExpensesView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppStrings.expensesTitle, style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            AppStrings.expensesTitle,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: AppSpacing.md),
           const Expanded(child: _ExpenseList()),
           const SizedBox(height: AppSpacing.md),
@@ -43,7 +46,8 @@ class _ExpenseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LedgerCubit, LedgerState>(
-      buildWhen: (prev, curr) => prev.expenses != curr.expenses || prev.people != curr.people,
+      buildWhen: (prev, curr) =>
+          prev.expenses != curr.expenses || prev.people != curr.people,
       builder: (context, state) {
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
@@ -55,13 +59,18 @@ class _ExpenseList extends StatelessWidget {
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final expense = state.expenses[index];
-                    final payerName = state.people.findById(expense.payerId).name;
+                    final payerName = state.people
+                        .findById(expense.payerId)
+                        .name;
                     return ExpenseListItem(
                       title: expense.title,
                       payerName: payerName,
                       participantCount: expense.participantIds.length,
                       amount: expense.amount,
-                      onTap: () => AddExpenseSheet.show(context, initialExpense: expense),
+                      onTap: () => AddExpenseSheet.show(
+                        context,
+                        initialExpense: expense,
+                      ),
                       onDelete: () => _deleteExpense(context, expense),
                     );
                   },

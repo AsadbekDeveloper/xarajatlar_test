@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/app_spacing.dart';
+import 'bounded_content_width.dart';
 
 /// Shared page shell for both ledger screens: a page-edge margin around a
 /// white rounded card with its own inner padding, matching the reference
@@ -14,8 +15,13 @@ class ScreenCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Card(
-        child: Padding(padding: const EdgeInsets.all(AppSpacing.lg), child: child),
+      child: BoundedContentWidth(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: child,
+          ),
+        ),
       ),
     );
   }

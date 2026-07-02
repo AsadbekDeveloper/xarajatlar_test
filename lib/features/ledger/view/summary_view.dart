@@ -21,7 +21,10 @@ class SummaryView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(AppStrings.summaryTitle, style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            AppStrings.summaryTitle,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: AppSpacing.md),
           const Expanded(child: _SummaryList()),
         ],
@@ -36,7 +39,8 @@ class _SummaryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LedgerCubit, LedgerState>(
-      buildWhen: (prev, curr) => prev.expenses != curr.expenses || prev.people != curr.people,
+      buildWhen: (prev, curr) =>
+          prev.expenses != curr.expenses || prev.people != curr.people,
       builder: (context, state) {
         final balances = calculateBalances(state.people, state.expenses);
         final settlements = calculateSettlements(balances);
@@ -45,7 +49,10 @@ class _SummaryList extends StatelessWidget {
         return ListView(
           children: [
             for (final person in state.people)
-              PersonBalanceTile(name: person.name, balance: balances[person.id] ?? 0),
+              PersonBalanceTile(
+                name: person.name,
+                balance: balances[person.id] ?? 0,
+              ),
             const SizedBox(height: AppSpacing.md),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -61,7 +68,10 @@ class _SummaryList extends StatelessWidget {
             if (settlements.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Text(AppStrings.settlementsEmptyMessage, style: textTheme.bodyMedium),
+                child: Text(
+                  AppStrings.settlementsEmptyMessage,
+                  style: textTheme.bodyMedium,
+                ),
               )
             else
               for (final settlement in settlements)

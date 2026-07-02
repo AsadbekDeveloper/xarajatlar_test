@@ -1,7 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class Settlement extends Equatable {
-  const Settlement({required this.fromId, required this.toId, required this.amount});
+  const Settlement({
+    required this.fromId,
+    required this.toId,
+    required this.amount,
+  });
 
   /// Person who must pay.
   final String fromId;
@@ -47,7 +51,9 @@ List<Settlement> calculateSettlements(Map<String, int> balances) {
     final amount = remaining[creditorId]! < -remaining[debtorId]!
         ? remaining[creditorId]!
         : -remaining[debtorId]!;
-    settlements.add(Settlement(fromId: debtorId, toId: creditorId, amount: amount));
+    settlements.add(
+      Settlement(fromId: debtorId, toId: creditorId, amount: amount),
+    );
 
     remaining[creditorId] = remaining[creditorId]! - amount;
     remaining[debtorId] = remaining[debtorId]! + amount;

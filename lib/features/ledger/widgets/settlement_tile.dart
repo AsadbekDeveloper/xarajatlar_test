@@ -20,7 +20,10 @@ class SettlementTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final primary = Theme.of(context).colorScheme.primary;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: AppSpacing.lg),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.lg,
+      ),
       child: Row(
         children: [
           Expanded(
@@ -33,9 +36,17 @@ class SettlementTile extends StatelessWidget {
                   TextSpan(text: toName),
                 ],
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(formatSom(amount), style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            formatSom(amount),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+          ),
         ],
       ),
     );

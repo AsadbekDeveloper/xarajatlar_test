@@ -6,7 +6,11 @@ import '../../../core/app_theme.dart';
 import '../../../core/money_formatter.dart';
 
 class PersonBalanceTile extends StatelessWidget {
-  const PersonBalanceTile({super.key, required this.name, required this.balance});
+  const PersonBalanceTile({
+    super.key,
+    required this.name,
+    required this.balance,
+  });
 
   final String name;
   final int balance;
@@ -30,14 +34,22 @@ class PersonBalanceTile extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm, horizontal: AppSpacing.lg),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+        horizontal: AppSpacing.lg,
+      ),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: textTheme.titleMedium),
+                Text(
+                  name,
+                  style: textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 Text(statusLabel, style: textTheme.bodySmall),
               ],
             ),
@@ -45,6 +57,9 @@ class PersonBalanceTile extends StatelessWidget {
           Text(
             formatSignedSom(balance),
             style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: amountColor),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
           ),
         ],
       ),

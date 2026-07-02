@@ -28,18 +28,28 @@ class ExpenseListItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.md,
+          horizontal: AppSpacing.lg,
+        ),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: textTheme.titleMedium),
+                  Text(
+                    title,
+                    style: textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     AppStrings.expenseSubtitle(payerName, participantCount),
                     style: textTheme.bodySmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -47,6 +57,9 @@ class ExpenseListItem extends StatelessWidget {
             Text(
               formatSom(amount),
               style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, size: 20),

@@ -13,6 +13,15 @@ class App extends StatelessWidget {
       title: AppStrings.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      builder: (context, child) {
+        final clamped = MediaQuery.textScalerOf(
+          context,
+        ).clamp(minScaleFactor: 0.85, maxScaleFactor: 1.3);
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: clamped),
+          child: child!,
+        );
+      },
       home: const LedgerHomePage(),
     );
   }

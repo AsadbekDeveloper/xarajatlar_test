@@ -6,7 +6,10 @@
 /// so'm: `base * n + remainder * 1 == (amount - remainder) + remainder ==
 /// amount`, for any amount >= 0 and any non-empty participant list.
 Map<String, int> splitEqually(int amount, List<String> participantIds) {
-  assert(participantIds.isNotEmpty, 'An expense needs at least one participant.');
+  assert(
+    participantIds.isNotEmpty,
+    'An expense needs at least one participant.',
+  );
   final base = amount ~/ participantIds.length;
   final remainder = amount % participantIds.length;
   return {
@@ -18,7 +21,11 @@ Map<String, int> splitEqually(int amount, List<String> participantIds) {
 /// Validates a manually-entered ("custom") split: it must cover exactly the
 /// given participants, contain no negative shares, and sum to exactly
 /// [amount] — the same money-accuracy requirement as the equal split.
-String? validateCustomShares(int amount, Map<String, int> shares, List<String> participantIds) {
+String? validateCustomShares(
+  int amount,
+  Map<String, int> shares,
+  List<String> participantIds,
+) {
   if (!_sameParticipants(shares.keys, participantIds)) {
     return "Har bir qatnashchi uchun ulush kiriting";
   }
@@ -35,5 +42,7 @@ String? validateCustomShares(int amount, Map<String, int> shares, List<String> p
 bool _sameParticipants(Iterable<String> a, Iterable<String> b) {
   final setA = a.toSet();
   final setB = b.toSet();
-  return setA.length == a.length && setA.length == setB.length && setA.containsAll(setB);
+  return setA.length == a.length &&
+      setA.length == setB.length &&
+      setA.containsAll(setB);
 }

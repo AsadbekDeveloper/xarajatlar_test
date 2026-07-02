@@ -66,19 +66,26 @@ class _CustomSplitEditorState extends State<CustomSplitEditor> {
     });
     for (final person in widget.participants) {
       _controllers.putIfAbsent(person.id, () {
-        final initial = _everSeenIds.contains(person.id) ? null : widget.initialShares?[person.id];
-        return TextEditingController(text: initial == null ? '' : initial.toString());
+        final initial = _everSeenIds.contains(person.id)
+            ? null
+            : widget.initialShares?[person.id];
+        return TextEditingController(
+          text: initial == null ? '' : initial.toString(),
+        );
       });
       _everSeenIds.add(person.id);
     }
   }
 
-  int get _enteredTotal =>
-      _controllers.values.fold(0, (sum, c) => sum + (int.tryParse(c.text) ?? 0));
+  int get _enteredTotal => _controllers.values.fold(
+    0,
+    (sum, c) => sum + (int.tryParse(c.text) ?? 0),
+  );
 
   void _emitChange() {
     widget.onChanged({
-      for (final entry in _controllers.entries) entry.key: int.tryParse(entry.value.text) ?? 0,
+      for (final entry in _controllers.entries)
+        entry.key: int.tryParse(entry.value.text) ?? 0,
     });
   }
 
@@ -96,16 +103,26 @@ class _CustomSplitEditorState extends State<CustomSplitEditor> {
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: Row(
               children: [
-                Expanded(child: Text(person.name, style: textTheme.bodyMedium)),
+                Expanded(
+                  child: Text(
+                    person.name,
+                    style: textTheme.bodyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 SizedBox(
-                  width: 120,
+                  width: AppLayout.splitAmountFieldWidth,
                   child: TextField(
                     key: ValueKey('customSplitField_${person.id}'),
                     controller: _controllers[person.id],
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textAlign: TextAlign.end,
-                    decoration: const InputDecoration(isDense: true, hintText: '0'),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      hintText: '0',
+                    ),
                     onChanged: (_) => setState(_emitChange),
                   ),
                 ),
@@ -117,7 +134,9 @@ class _CustomSplitEditorState extends State<CustomSplitEditor> {
               ? AppStrings.customSplitBalancedMessage
               : AppStrings.customSplitRemaining(remaining),
           style: textTheme.bodySmall?.copyWith(
-            color: isBalanced ? context.ledgerColors.positive : context.ledgerColors.negative,
+            color: isBalanced
+                ? context.ledgerColors.positive
+                : context.ledgerColors.negative,
           ),
         ),
       ],

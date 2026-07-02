@@ -9,7 +9,10 @@ extension ContextFeedback on BuildContext {
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: ledgerColors.negative),
+        SnackBar(
+          content: Text(message),
+          backgroundColor: ledgerColors.negative,
+        ),
       );
   }
 

@@ -9,10 +9,14 @@ import 'person.dart';
 /// once in total (spread across `shares`, which sums to `amount`) — so the
 /// two contributions always cancel, even when the payer isn't one of the
 /// expense's participants.
-Map<String, int> calculateBalances(List<Person> people, List<Expense> expenses) {
+Map<String, int> calculateBalances(
+  List<Person> people,
+  List<Expense> expenses,
+) {
   final balances = {for (final person in people) person.id: 0};
   for (final expense in expenses) {
-    balances[expense.payerId] = (balances[expense.payerId] ?? 0) + expense.amount;
+    balances[expense.payerId] =
+        (balances[expense.payerId] ?? 0) + expense.amount;
     for (final entry in expense.shares.entries) {
       balances[entry.key] = (balances[entry.key] ?? 0) - entry.value;
     }

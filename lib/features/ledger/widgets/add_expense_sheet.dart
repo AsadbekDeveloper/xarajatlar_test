@@ -12,6 +12,7 @@ import '../cubit/ledger_state.dart';
 import '../domain/expense.dart';
 import '../domain/expense_splitter.dart';
 import '../domain/person.dart';
+import 'bounded_content_width.dart';
 import 'custom_split_editor.dart';
 import 'participant_selector.dart';
 
@@ -29,7 +30,9 @@ class AddExpenseSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.xl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.xl),
+        ),
       ),
       builder: (_) => AddExpenseSheet(initialExpense: initialExpense),
     );
@@ -40,9 +43,13 @@ class AddExpenseSheet extends StatefulWidget {
 }
 
 class _AddExpenseSheetState extends State<AddExpenseSheet> {
-  late final _titleController = TextEditingController(text: widget.initialExpense?.title ?? '');
+  late final _titleController = TextEditingController(
+    text: widget.initialExpense?.title ?? '',
+  );
   late final _amountController = TextEditingController(
-    text: widget.initialExpense == null ? '' : widget.initialExpense!.amount.toString(),
+    text: widget.initialExpense == null
+        ? ''
+        : widget.initialExpense!.amount.toString(),
   );
 
   String? _payerId;
@@ -60,17 +67,25 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
     _payerId = initial?.payerId;
     _participantIds =
         initial?.participantIds.toSet() ??
-        context.read<LedgerCubit>().state.people.map((person) => person.id).toSet();
+        context
+            .read<LedgerCubit>()
+            .state
+            .people
+            .map((person) => person.id)
+            .toSet();
     _splitMode = initial != null && !_matchesEqualSplit(initial)
         ? _SplitMode.custom
         : _SplitMode.equal;
     _customShares = initial?.shares;
   }
 
-  bool _matchesEqualSplit(Expense expense) =>
-      mapEquals(splitEqually(expense.amount, expense.participantIds), expense.shares);
+  bool _matchesEqualSplit(Expense expense) => mapEquals(
+    splitEqually(expense.amount, expense.participantIds),
+    expense.shares,
+  );
 
-  bool _isBeingEdited(Expense expense) => expense.id == widget.initialExpense!.id;
+  bool _isBeingEdited(Expense expense) =>
+      expense.id == widget.initialExpense!.id;
 
   @override
   void dispose() {
@@ -88,14 +103,18 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
 
     if (title.isEmpty) return _setError(AppStrings.titleRequiredError);
     if (amount <= 0) return _setError(AppStrings.amountRequiredError);
-    if (participantIds.isEmpty) return _setError(AppStrings.participantsRequiredError);
+    if (participantIds.isEmpty) {
+      return _setError(AppStrings.participantsRequiredError);
+    }
     if (_payerId == null || !people.any((person) => person.id == _payerId)) {
       return _setError(AppStrings.payerRequiredError);
     }
 
     Map<String, int>? customShares;
     if (_splitMode == _SplitMode.custom) {
-      customShares = {for (final id in participantIds) id: _customShares?[id] ?? 0};
+      customShares = {
+        for (final id in participantIds) id: _customShares?[id] ?? 0,
+      };
       final error = validateCustomShares(amount, customShares, participantIds);
       if (error != null) return _setError(error);
     }
@@ -135,9 +154,12 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: BlocConsumer<LedgerCubit, LedgerState>(
-        listenWhen: (prev, curr) => _isEditing && !curr.expenses.any(_isBeingEdited),
+        listenWhen: (prev, curr) =>
+            _isEditing && !curr.expenses.any(_isBeingEdited),
         listener: (context, state) {
           if (!context.mounted) return;
           context.showError(AppStrings.expenseNoLongerExists);
@@ -152,56 +174,71 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _isEditing ? AppStrings.editExpenseTitle : AppStrings.addExpenseButton,
-                    style: textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _ExpenseDetailsFields(
-                    titleController: _titleController,
-                    amountController: _amountController,
-                    payerId: _payerId,
-                    people: people,
-                    onAmountChanged: () => setState(() {}),
-                    onPayerChanged: (id) => setState(() => _payerId = id),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _ParticipantsSection(
-                    people: people,
-                    selectedIds: _participantIds,
-                    onSelectionChanged: (ids) => setState(() => _participantIds = ids),
-                    onAddPerson: (name) {
-                      final person = context.read<LedgerCubit>().addPerson(name);
-                      setState(() => _participantIds = {..._participantIds, person.id});
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _SplitModeSection(
-                    splitMode: _splitMode,
-                    onSplitModeChanged: (mode) => setState(() => _splitMode = mode),
-                    participants: selectedParticipants,
-                    totalAmount: int.tryParse(_amountController.text) ?? 0,
-                    initialShares: _customShares,
-                    onSharesChanged: (shares) => _customShares = shares,
-                  ),
-                  if (_errorMessage != null) ...[
-                    const SizedBox(height: AppSpacing.sm),
+              child: BoundedContentWidth(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      _errorMessage!,
-                      style: TextStyle(color: context.ledgerColors.negative),
+                      _isEditing
+                          ? AppStrings.editExpenseTitle
+                          : AppStrings.addExpenseButton,
+                      style: textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _ExpenseDetailsFields(
+                      titleController: _titleController,
+                      amountController: _amountController,
+                      payerId: _payerId,
+                      people: people,
+                      onAmountChanged: () => setState(() {}),
+                      onPayerChanged: (id) => setState(() => _payerId = id),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _ParticipantsSection(
+                      people: people,
+                      selectedIds: _participantIds,
+                      onSelectionChanged: (ids) =>
+                          setState(() => _participantIds = ids),
+                      onAddPerson: (name) {
+                        final person = context.read<LedgerCubit>().addPerson(
+                          name,
+                        );
+                        setState(
+                          () =>
+                              _participantIds = {..._participantIds, person.id},
+                        );
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _SplitModeSection(
+                      splitMode: _splitMode,
+                      onSplitModeChanged: (mode) =>
+                          setState(() => _splitMode = mode),
+                      participants: selectedParticipants,
+                      totalAmount: int.tryParse(_amountController.text) ?? 0,
+                      initialShares: _customShares,
+                      onSharesChanged: (shares) => _customShares = shares,
+                    ),
+                    if (_errorMessage != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        _errorMessage!,
+                        style: TextStyle(color: context.ledgerColors.negative),
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.lg),
+                    ElevatedButton(
+                      key: const Key('expenseSubmitButton'),
+                      onPressed: () => _submit(people),
+                      child: Text(
+                        _isEditing
+                            ? AppStrings.saveButton
+                            : AppStrings.addExpenseButton,
+                      ),
                     ),
                   ],
-                  const SizedBox(height: AppSpacing.lg),
-                  ElevatedButton(
-                    key: const Key('expenseSubmitButton'),
-                    onPressed: () => _submit(people),
-                    child: Text(_isEditing ? AppStrings.saveButton : AppStrings.addExpenseButton),
-                  ),
-                ],
+                ),
               ),
             ),
           );
@@ -239,7 +276,9 @@ class _ExpenseDetailsFields extends StatelessWidget {
           key: const Key('expenseTitleField'),
           controller: titleController,
           textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(labelText: AppStrings.titleFieldLabel),
+          decoration: const InputDecoration(
+            labelText: AppStrings.titleFieldLabel,
+          ),
         ),
         const SizedBox(height: AppSpacing.md),
         TextField(
@@ -247,16 +286,29 @@ class _ExpenseDetailsFields extends StatelessWidget {
           controller: amountController,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(labelText: AppStrings.amountFieldLabel),
+          decoration: const InputDecoration(
+            labelText: AppStrings.amountFieldLabel,
+          ),
           onChanged: (_) => onAmountChanged(),
         ),
         const SizedBox(height: AppSpacing.md),
         DropdownButtonFormField<String>(
           key: const Key('expensePayerDropdown'),
           initialValue: payerId,
-          decoration: const InputDecoration(labelText: AppStrings.payerFieldLabel),
+          isExpanded: true,
+          decoration: const InputDecoration(
+            labelText: AppStrings.payerFieldLabel,
+          ),
           items: [
-            for (final person in people) DropdownMenuItem(value: person.id, child: Text(person.name)),
+            for (final person in people)
+              DropdownMenuItem(
+                value: person.id,
+                child: Text(
+                  person.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
           ],
           onChanged: onPayerChanged,
         ),
@@ -283,7 +335,10 @@ class _ParticipantsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(AppStrings.participantsLabel, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          AppStrings.participantsLabel,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: AppSpacing.sm),
         ParticipantSelector(
           people: people,
@@ -322,11 +377,18 @@ class _SplitModeSection extends StatelessWidget {
       children: [
         SegmentedButton<_SplitMode>(
           segments: const [
-            ButtonSegment(value: _SplitMode.equal, label: Text(AppStrings.equalSplitLabel)),
-            ButtonSegment(value: _SplitMode.custom, label: Text(AppStrings.customSplitLabel)),
+            ButtonSegment(
+              value: _SplitMode.equal,
+              label: Text(AppStrings.equalSplitLabel),
+            ),
+            ButtonSegment(
+              value: _SplitMode.custom,
+              label: Text(AppStrings.customSplitLabel),
+            ),
           ],
           selected: {splitMode},
-          onSelectionChanged: (selection) => onSplitModeChanged(selection.first),
+          onSelectionChanged: (selection) =>
+              onSplitModeChanged(selection.first),
         ),
         if (splitMode == _SplitMode.custom) ...[
           const SizedBox(height: AppSpacing.md),

@@ -63,9 +63,17 @@ class AppTheme {
       extensions: const [LedgerColors.light],
       textTheme: const TextTheme(
         // sarlavha (title)
-        headlineSmall: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: _textPrimary),
+        headlineSmall: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: _textPrimary,
+        ),
         // ism (name)
-        titleMedium: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: _textPrimary),
+        titleMedium: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: _textPrimary,
+        ),
         // asosiy (body)
         bodyMedium: TextStyle(fontSize: 14, color: _textPrimary),
         // izoh (caption)
@@ -75,14 +83,18 @@ class AppTheme {
         color: _surface,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.card)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: _primary,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(48),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.button),
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -98,7 +110,9 @@ class AppTheme {
         ),
       ),
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.button)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.button),
+        ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: _surface,
