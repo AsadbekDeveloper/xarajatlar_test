@@ -27,12 +27,15 @@ void main() {
     return field.controller!.text;
   }
 
-  testWidgets('seeds every participant from initialShares on first appearance', (tester) async {
-    await tester.pumpWidget(wrap([personA, personB]));
+  testWidgets(
+    'seeds every participant from initialShares on first appearance',
+    (tester) async {
+      await tester.pumpWidget(wrap([personA, personB]));
 
-    expect(textOf(tester, personA), '5000');
-    expect(textOf(tester, personB), '5000');
-  });
+      expect(textOf(tester, personA), '5000');
+      expect(textOf(tester, personB), '5000');
+    },
+  );
 
   testWidgets(
     'a participant removed then re-added during the same session starts blank, '

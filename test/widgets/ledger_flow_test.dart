@@ -9,7 +9,10 @@ import 'package:xarajatlar_test/features/ledger/ledger.dart';
 /// automated here so a future change can't silently regress them.
 Future<void> _pumpLedgerApp(WidgetTester tester) async {
   await tester.pumpWidget(
-    BlocProvider(create: (_) => LedgerCubit(InMemoryLedgerRepository()), child: const App()),
+    BlocProvider(
+      create: (_) => LedgerCubit(InMemoryLedgerRepository()),
+      child: const App(),
+    ),
   );
   await tester.pumpAndSettle();
 }
@@ -36,21 +39,34 @@ Future<void> _addExpense(
 }
 
 void main() {
-  testWidgets('adding an expense shows it in the list with the right subtitle/amount', (
+  testWidgets(
+    'adding an expense shows it in the list with the right subtitle/amount',
+    (tester) async {
+      await _pumpLedgerApp(tester);
+
+      await _addExpense(
+        tester,
+        title: 'Kechki ovqat',
+        amount: '90000',
+        payerName: 'Aziz',
+      );
+
+      expect(find.text('Kechki ovqat'), findsOneWidget);
+      expect(find.text(AppStrings.expenseSubtitle('Aziz', 3)), findsOneWidget);
+      expect(find.text('90 000'), findsOneWidget);
+    },
+  );
+
+  testWidgets('deleting an expense and tapping undo restores it', (
     tester,
   ) async {
     await _pumpLedgerApp(tester);
-
-    await _addExpense(tester, title: 'Kechki ovqat', amount: '90000', payerName: 'Aziz');
-
-    expect(find.text('Kechki ovqat'), findsOneWidget);
-    expect(find.text(AppStrings.expenseSubtitle('Aziz', 3)), findsOneWidget);
-    expect(find.text('90 000'), findsOneWidget);
-  });
-
-  testWidgets('deleting an expense and tapping undo restores it', (tester) async {
-    await _pumpLedgerApp(tester);
-    await _addExpense(tester, title: 'Taksi', amount: '30000', payerName: 'Bek');
+    await _addExpense(
+      tester,
+      title: 'Taksi',
+      amount: '30000',
+      payerName: 'Bek',
+    );
 
     await tester.tap(find.byTooltip(AppStrings.deleteTooltip));
     await tester.pumpAndSettle();
@@ -64,14 +80,24 @@ void main() {
     expect(find.text('Taksi'), findsOneWidget);
   });
 
-  testWidgets('editing an expense updates the amount shown in the list', (tester) async {
+  testWidgets('editing an expense updates the amount shown in the list', (
+    tester,
+  ) async {
     await _pumpLedgerApp(tester);
-    await _addExpense(tester, title: 'Kechki ovqat', amount: '90000', payerName: 'Aziz');
+    await _addExpense(
+      tester,
+      title: 'Kechki ovqat',
+      amount: '90000',
+      payerName: 'Aziz',
+    );
 
     await tester.tap(find.text('Kechki ovqat'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byKey(const Key('expenseAmountField')), '50000');
+    await tester.enterText(
+      find.byKey(const Key('expenseAmountField')),
+      '50000',
+    );
     await tester.tap(find.byKey(const Key('expenseSubmitButton')));
     await tester.pumpAndSettle();
 

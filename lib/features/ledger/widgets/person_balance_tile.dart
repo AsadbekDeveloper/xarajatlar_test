@@ -4,6 +4,7 @@ import '../../../core/app_spacing.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/app_theme.dart';
 import '../../../core/money_formatter.dart';
+import 'trailing_amount_text.dart';
 
 class PersonBalanceTile extends StatelessWidget {
   const PersonBalanceTile({
@@ -20,16 +21,16 @@ class PersonBalanceTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final ledgerColors = context.ledgerColors;
 
-    final Color amountColor;
+    final amountColor = ledgerColors.forSign(
+      balance,
+      zero: Theme.of(context).colorScheme.outline,
+    );
     final String statusLabel;
     if (balance > 0) {
-      amountColor = ledgerColors.positive;
       statusLabel = AppStrings.balancePositiveLabel;
     } else if (balance < 0) {
-      amountColor = ledgerColors.negative;
       statusLabel = AppStrings.balanceNegativeLabel;
     } else {
-      amountColor = Theme.of(context).colorScheme.outline;
       statusLabel = AppStrings.balanceZeroLabel;
     }
 
@@ -54,12 +55,12 @@ class PersonBalanceTile extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            formatSignedSom(balance),
-            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: amountColor),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.end,
+          TrailingAmountText(
+            text: formatSignedSom(balance),
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: amountColor,
+            ),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/app_spacing.dart';
 import '../../../core/money_formatter.dart';
+import 'trailing_amount_text.dart';
 
 class SettlementTile extends StatelessWidget {
   const SettlementTile({
@@ -40,12 +41,9 @@ class SettlementTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            formatSom(amount),
+          TrailingAmountText(
+            text: formatSom(amount),
             style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.end,
           ),
         ],
       ),

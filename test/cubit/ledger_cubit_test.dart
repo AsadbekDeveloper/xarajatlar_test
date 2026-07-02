@@ -27,7 +27,12 @@ void main() {
   test('addExpense adds to state.expenses', () {
     final cubit = buildCubit();
 
-    cubit.addExpense(title: 'lunch', amount: 10000, payerId: 'a', participantIds: ['a', 'b']);
+    cubit.addExpense(
+      title: 'lunch',
+      amount: 10000,
+      payerId: 'a',
+      participantIds: ['a', 'b'],
+    );
 
     expect(cubit.state.expenses, hasLength(1));
     expect(cubit.state.expenses.single.title, 'lunch');
@@ -35,10 +40,21 @@ void main() {
 
   test('updateExpense updates the matching expense in state', () {
     final cubit = buildCubit();
-    cubit.addExpense(title: 'lunch', amount: 10000, payerId: 'a', participantIds: ['a', 'b']);
+    cubit.addExpense(
+      title: 'lunch',
+      amount: 10000,
+      payerId: 'a',
+      participantIds: ['a', 'b'],
+    );
     final id = cubit.state.expenses.single.id;
 
-    cubit.updateExpense(id, title: 'dinner', amount: 20000, payerId: 'b', participantIds: ['a', 'b']);
+    cubit.updateExpense(
+      id,
+      title: 'dinner',
+      amount: 20000,
+      payerId: 'b',
+      participantIds: ['a', 'b'],
+    );
 
     final updated = cubit.state.expenses.single;
     expect(updated.title, 'dinner');
@@ -46,25 +62,38 @@ void main() {
     expect(updated.payerId, 'b');
   });
 
-  test('updateExpense with an unknown id propagates the error rather than swallowing it', () {
-    final cubit = buildCubit();
+  test(
+    'updateExpense with an unknown id propagates the error rather than swallowing it',
+    () {
+      final cubit = buildCubit();
 
-    expect(
-      () => cubit.updateExpense(
-        'missing',
-        title: 'x',
-        amount: 1000,
-        payerId: 'a',
-        participantIds: ['a'],
-      ),
-      throwsStateError,
-    );
-  });
+      expect(
+        () => cubit.updateExpense(
+          'missing',
+          title: 'x',
+          amount: 1000,
+          payerId: 'a',
+          participantIds: ['a'],
+        ),
+        throwsStateError,
+      );
+    },
+  );
 
   test('deleteExpense/restoreExpense thread the index through to state', () {
     final cubit = buildCubit();
-    cubit.addExpense(title: 'a', amount: 1000, payerId: 'a', participantIds: ['a', 'b']);
-    cubit.addExpense(title: 'b', amount: 2000, payerId: 'a', participantIds: ['a', 'b']);
+    cubit.addExpense(
+      title: 'a',
+      amount: 1000,
+      payerId: 'a',
+      participantIds: ['a', 'b'],
+    );
+    cubit.addExpense(
+      title: 'b',
+      amount: 2000,
+      payerId: 'a',
+      participantIds: ['a', 'b'],
+    );
     final first = cubit.state.expenses.first;
 
     final index = cubit.deleteExpense(first.id);

@@ -4,14 +4,15 @@ import 'package:equatable/equatable.dart';
 /// equal split or a validated custom split) and always sums to [amount] —
 /// callers never re-derive it, so the invariant only needs proving once.
 class Expense extends Equatable {
-  const Expense({
+  Expense({
     required this.id,
     required this.title,
     required this.amount,
     required this.payerId,
-    required this.participantIds,
-    required this.shares,
-  });
+    required List<String> participantIds,
+    required Map<String, int> shares,
+  }) : participantIds = List.unmodifiable(participantIds),
+       shares = Map.unmodifiable(shares);
 
   final String id;
   final String title;

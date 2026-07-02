@@ -24,34 +24,52 @@ void main() {
     shares: splitEqually(amount, participantIds),
   );
 
-  test('the reference mockup scenario produces the exact expected balances', () {
+  test(
+    'the reference mockup scenario produces the exact expected balances',
+    () {
+      final expenses = [
+        expense(
+          title: 'Kechki ovqat',
+          amount: 90000,
+          payerId: aziz.id,
+          participantIds: [aziz.id, bek.id, dilnoza.id],
+        ),
+        expense(
+          title: 'Taksi',
+          amount: 30000,
+          payerId: bek.id,
+          participantIds: [aziz.id, bek.id, dilnoza.id],
+        ),
+      ];
+
+      final balances = calculateBalances(people, expenses);
+
+      expect(balances[aziz.id], 50000);
+      expect(balances[bek.id], -10000);
+      expect(balances[dilnoza.id], -40000);
+    },
+  );
+
+  test('balances always sum to exactly zero (conservation)', () {
     final expenses = [
       expense(
-        title: 'Kechki ovqat',
-        amount: 90000,
+        title: 'a',
+        amount: 100000,
         payerId: aziz.id,
         participantIds: [aziz.id, bek.id, dilnoza.id],
       ),
       expense(
-        title: 'Taksi',
-        amount: 30000,
-        payerId: bek.id,
-        participantIds: [aziz.id, bek.id, dilnoza.id],
+        title: 'b',
+        amount: 33333,
+        payerId: dilnoza.id,
+        participantIds: [bek.id, dilnoza.id],
       ),
-    ];
-
-    final balances = calculateBalances(people, expenses);
-
-    expect(balances[aziz.id], 50000);
-    expect(balances[bek.id], -10000);
-    expect(balances[dilnoza.id], -40000);
-  });
-
-  test('balances always sum to exactly zero (conservation)', () {
-    final expenses = [
-      expense(title: 'a', amount: 100000, payerId: aziz.id, participantIds: [aziz.id, bek.id, dilnoza.id]),
-      expense(title: 'b', amount: 33333, payerId: dilnoza.id, participantIds: [bek.id, dilnoza.id]),
-      expense(title: 'c', amount: 1, payerId: bek.id, participantIds: [aziz.id]),
+      expense(
+        title: 'c',
+        amount: 1,
+        payerId: bek.id,
+        participantIds: [aziz.id],
+      ),
     ];
 
     final balances = calculateBalances(people, expenses);
@@ -61,7 +79,12 @@ void main() {
 
   test('conservation holds even when the payer is not a participant', () {
     final expenses = [
-      expense(title: 'office lunch', amount: 60000, payerId: aziz.id, participantIds: [bek.id, dilnoza.id]),
+      expense(
+        title: 'office lunch',
+        amount: 60000,
+        payerId: aziz.id,
+        participantIds: [bek.id, dilnoza.id],
+      ),
     ];
 
     final balances = calculateBalances(people, expenses);
@@ -79,7 +102,12 @@ void main() {
 
   test('paying exactly your own share yields a zero balance', () {
     final expenses = [
-      expense(title: 'solo coffee', amount: 15000, payerId: aziz.id, participantIds: [aziz.id]),
+      expense(
+        title: 'solo coffee',
+        amount: 15000,
+        payerId: aziz.id,
+        participantIds: [aziz.id],
+      ),
     ];
 
     final balances = calculateBalances(people, expenses);

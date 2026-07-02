@@ -9,7 +9,10 @@ void main() {
 
   setUp(() {
     repository = InMemoryLedgerRepository(
-      seedPeople: const [Person(id: 'a', name: 'A'), Person(id: 'b', name: 'B')],
+      seedPeople: const [
+        Person(id: 'a', name: 'A'),
+        Person(id: 'b', name: 'B'),
+      ],
     );
     aId = 'a';
     bId = 'b';
@@ -85,27 +88,30 @@ void main() {
     );
   });
 
-  test('updateExpense preserves the id and applies every field via copyWith', () {
-    final expense = repository.addExpense(
-      title: 'lunch',
-      amount: 10000,
-      payerId: aId,
-      participantIds: [aId, bId],
-    );
+  test(
+    'updateExpense preserves the id and applies every field via copyWith',
+    () {
+      final expense = repository.addExpense(
+        title: 'lunch',
+        amount: 10000,
+        payerId: aId,
+        participantIds: [aId, bId],
+      );
 
-    final updated = repository.updateExpense(
-      expense.id,
-      title: 'dinner',
-      amount: 20000,
-      payerId: bId,
-      participantIds: [aId, bId],
-    );
+      final updated = repository.updateExpense(
+        expense.id,
+        title: 'dinner',
+        amount: 20000,
+        payerId: bId,
+        participantIds: [aId, bId],
+      );
 
-    expect(updated.id, expense.id);
-    expect(updated.title, 'dinner');
-    expect(updated.amount, 20000);
-    expect(updated.payerId, bId);
-    expect(updated.shares.values.fold(0, (sum, share) => sum + share), 20000);
-    expect(repository.getExpenses(), [updated]);
-  });
+      expect(updated.id, expense.id);
+      expect(updated.title, 'dinner');
+      expect(updated.amount, 20000);
+      expect(updated.payerId, bId);
+      expect(updated.shares.values.fold(0, (sum, share) => sum + share), 20000);
+      expect(repository.getExpenses(), [updated]);
+    },
+  );
 }

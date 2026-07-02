@@ -7,10 +7,7 @@ class Settlement extends Equatable {
     required this.amount,
   });
 
-  /// Person who must pay.
   final String fromId;
-
-  /// Person who receives the payment.
   final String toId;
   final int amount;
 

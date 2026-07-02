@@ -30,11 +30,9 @@ class CustomSplitEditor extends StatefulWidget {
 class _CustomSplitEditorState extends State<CustomSplitEditor> {
   final Map<String, TextEditingController> _controllers = {};
 
-  /// Participants who've had a controller at any point this session. A
-  /// participant seeds from [CustomSplitEditor.initialShares] only the first
-  /// time they appear — deselecting them (disposing their controller) and
-  /// reselecting later starts them blank, not with their stale pre-edit
-  /// value.
+  /// Participants who've ever had a controller — so a participant seeds from
+  /// [CustomSplitEditor.initialShares] only the first time, not again after
+  /// being deselected and reselected.
   final Set<String> _everSeenIds = {};
 
   @override

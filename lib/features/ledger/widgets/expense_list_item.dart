@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/app_spacing.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/money_formatter.dart';
+import 'trailing_amount_text.dart';
 
 class ExpenseListItem extends StatelessWidget {
   const ExpenseListItem({
@@ -54,12 +55,11 @@ class ExpenseListItem extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              formatSom(amount),
-              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.end,
+            TrailingAmountText(
+              text: formatSom(amount),
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, size: 20),

@@ -7,7 +7,6 @@ import '../../../core/context_extensions.dart';
 import '../cubit/ledger_cubit.dart';
 import '../cubit/ledger_state.dart';
 import '../domain/expense.dart';
-import '../domain/person.dart';
 import '../widgets/add_expense_sheet.dart';
 import '../widgets/empty_expenses_placeholder.dart';
 import '../widgets/expense_list_item.dart';
@@ -59,9 +58,7 @@ class _ExpenseList extends StatelessWidget {
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final expense = state.expenses[index];
-                    final payerName = state.people
-                        .findById(expense.payerId)
-                        .name;
+                    final payerName = state.personById(expense.payerId).name;
                     return ExpenseListItem(
                       title: expense.title,
                       payerName: payerName,

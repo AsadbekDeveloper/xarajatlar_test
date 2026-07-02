@@ -11,23 +11,27 @@ void main() {
   ) {
     final net = {for (final id in balances.keys) id: 0};
     for (final settlement in settlements) {
-      net[settlement.fromId] = (net[settlement.fromId] ?? 0) - settlement.amount;
+      net[settlement.fromId] =
+          (net[settlement.fromId] ?? 0) - settlement.amount;
       net[settlement.toId] = (net[settlement.toId] ?? 0) + settlement.amount;
     }
     expect(net, balances);
   }
 
-  test('reference mockup example settles in exactly the two payments shown in the design', () {
-    final balances = {'aziz': 50000, 'bek': -10000, 'dilnoza': -40000};
+  test(
+    'reference mockup example settles in exactly the two payments shown in the design',
+    () {
+      final balances = {'aziz': 50000, 'bek': -10000, 'dilnoza': -40000};
 
-    final settlements = calculateSettlements(balances);
+      final settlements = calculateSettlements(balances);
 
-    expect(settlements, [
-      const Settlement(fromId: 'dilnoza', toId: 'aziz', amount: 40000),
-      const Settlement(fromId: 'bek', toId: 'aziz', amount: 10000),
-    ]);
-    expectSettlementsConserveBalances(balances, settlements);
-  });
+      expect(settlements, [
+        const Settlement(fromId: 'dilnoza', toId: 'aziz', amount: 40000),
+        const Settlement(fromId: 'bek', toId: 'aziz', amount: 10000),
+      ]);
+      expectSettlementsConserveBalances(balances, settlements);
+    },
+  );
 
   test('all-zero balances need no payments', () {
     final settlements = calculateSettlements({'a': 0, 'b': 0});
@@ -59,7 +63,14 @@ void main() {
     'in 4 by cancelling C against E directly) — acceptable for a friend-group '
     'app since true global minimality is NP-hard to guarantee in general',
     () {
-      final balances = {'a': -2000, 'b': -2000, 'c': -5000, 'd': 8000, 'e': 5000, 'f': -4000};
+      final balances = {
+        'a': -2000,
+        'b': -2000,
+        'c': -5000,
+        'd': 8000,
+        'e': 5000,
+        'f': -4000,
+      };
 
       final settlements = calculateSettlements(balances);
 

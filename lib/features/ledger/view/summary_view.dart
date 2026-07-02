@@ -6,7 +6,6 @@ import '../../../core/app_strings.dart';
 import '../cubit/ledger_cubit.dart';
 import '../cubit/ledger_state.dart';
 import '../domain/balance_calculator.dart';
-import '../domain/person.dart';
 import '../domain/settlement_calculator.dart';
 import '../widgets/person_balance_tile.dart';
 import '../widgets/screen_card.dart';
@@ -76,8 +75,8 @@ class _SummaryList extends StatelessWidget {
             else
               for (final settlement in settlements)
                 SettlementTile(
-                  fromName: state.people.findById(settlement.fromId).name,
-                  toName: state.people.findById(settlement.toId).name,
+                  fromName: state.personById(settlement.fromId).name,
+                  toName: state.personById(settlement.toId).name,
                   amount: settlement.amount,
                 ),
           ],

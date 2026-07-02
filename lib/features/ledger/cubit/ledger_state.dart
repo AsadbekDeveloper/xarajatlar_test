@@ -15,6 +15,8 @@ class LedgerState extends Equatable {
   final List<Person> people;
   final List<Expense> expenses;
 
+  Person personById(String id) => people.findById(id);
+
   LedgerState copyWith({List<Person>? people, List<Expense>? expenses}) =>
       LedgerState(
         people: people ?? this.people,

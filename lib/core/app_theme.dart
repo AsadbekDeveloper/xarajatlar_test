@@ -38,6 +38,16 @@ extension LedgerThemeContext on BuildContext {
   LedgerColors get ledgerColors => Theme.of(this).extension<LedgerColors>()!;
 }
 
+extension LedgerColorsSign on LedgerColors {
+  /// Picks [positive]/[negative] by the sign of [value], falling back to
+  /// [zero] — the "oladi/beradi" color rule for a signed balance.
+  Color forSign(int value, {required Color zero}) {
+    if (value > 0) return positive;
+    if (value < 0) return negative;
+    return zero;
+  }
+}
+
 class AppTheme {
   const AppTheme._();
 

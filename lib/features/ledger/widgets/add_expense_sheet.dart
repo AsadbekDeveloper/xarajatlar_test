@@ -121,10 +121,8 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
 
     final cubit = context.read<LedgerCubit>();
     if (_isEditing) {
-      // The BlocConsumer listener below should always catch a
-      // deleted-out-from-under-us expense first and close the sheet; this is
-      // a defense-in-depth backstop so a repository invariant violation can
-      // never crash a widget's onPressed.
+      // Defense-in-depth: the listener below normally closes the sheet first if
+      // the expense was deleted elsewhere; this backstops that race.
       try {
         cubit.updateExpense(
           widget.initialExpense!.id,
@@ -224,7 +222,9 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
                       const SizedBox(height: AppSpacing.sm),
                       Text(
                         _errorMessage!,
-                        style: TextStyle(color: context.ledgerColors.negative),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: context.ledgerColors.negative,
+                        ),
                       ),
                     ],
                     const SizedBox(height: AppSpacing.lg),
