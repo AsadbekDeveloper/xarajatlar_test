@@ -124,11 +124,24 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.button),
         ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      navigationBarTheme: NavigationBarThemeData(
         backgroundColor: _surface,
-        selectedItemColor: _primary,
-        unselectedItemColor: _textSecondary,
-        type: BottomNavigationBarType.fixed,
+        indicatorColor: _primary.withValues(alpha: 0.12),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? _primary
+                : _textSecondary,
+          ),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => TextStyle(
+            fontSize: 12,
+            color: states.contains(WidgetState.selected)
+                ? _primary
+                : _textSecondary,
+          ),
+        ),
       ),
     );
   }

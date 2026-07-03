@@ -23,15 +23,16 @@ class _LedgerHomePageState extends State<LedgerHomePage> {
           children: const [ExpensesView(), SummaryView()],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        items: const [
-          BottomNavigationBarItem(
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) =>
+            setState(() => _selectedIndex = index),
+        destinations: const [
+          NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
             label: AppStrings.expensesTitle,
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.pie_chart_outline),
             label: AppStrings.summaryTitle,
           ),

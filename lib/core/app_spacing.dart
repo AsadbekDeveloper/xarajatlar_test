@@ -9,12 +9,13 @@ class AppSpacing {
   static const xl = 24.0;
 }
 
-/// Radius tokens: card 12px · button 10px.
+/// Radius tokens: card 12px · button 10px · sheet 24px.
 class AppRadius {
   const AppRadius._();
 
   static const card = 12.0;
   static const button = 10.0;
+  static const sheet = 24.0;
 }
 
 /// Layout bounds — keeps content readable on viewports wider than a phone

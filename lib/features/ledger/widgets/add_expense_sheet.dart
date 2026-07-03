@@ -32,7 +32,7 @@ class AddExpenseSheet extends StatefulWidget {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSpacing.xl),
+          top: Radius.circular(AppRadius.sheet),
         ),
       ),
       builder: (_) => AddExpenseSheet(initialExpense: initialExpense),
