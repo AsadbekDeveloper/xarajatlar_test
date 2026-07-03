@@ -115,11 +115,15 @@ class _CustomSplitEditorState extends State<CustomSplitEditor> {
                     key: ValueKey('customSplitField_${person.id}'),
                     controller: _controllers[person.id],
                     keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(12),
+                    ],
                     textAlign: TextAlign.end,
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: '0',
+                      counterText: '',
                     ),
                     onChanged: (_) => setState(_emitChange),
                   ),

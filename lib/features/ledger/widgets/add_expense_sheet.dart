@@ -163,7 +163,7 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
           context.showError(AppStrings.expenseNoLongerExists);
           Navigator.of(context).pop();
         },
-        buildWhen: (prev, curr) => prev.people != curr.people,
+        buildWhen: (prev, curr) => !listEquals(prev.people, curr.people),
         builder: (context, state) {
           final people = state.people;
           final selectedParticipants = people
@@ -220,10 +220,13 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
                     ),
                     if (_errorMessage != null) ...[
                       const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        _errorMessage!,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: context.ledgerColors.negative,
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          _errorMessage!,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: context.ledgerColors.negative,
+                          ),
                         ),
                       ),
                     ],
@@ -285,9 +288,13 @@ class _ExpenseDetailsFields extends StatelessWidget {
           key: const Key('expenseAmountField'),
           controller: amountController,
           keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(12),
+          ],
           decoration: const InputDecoration(
             labelText: AppStrings.amountFieldLabel,
+            counterText: '',
           ),
           onChanged: (_) => onAmountChanged(),
         ),

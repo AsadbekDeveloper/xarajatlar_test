@@ -26,7 +26,21 @@ class Settlement extends Equatable {
 /// needs exponential backtracking to guarantee. See
 /// `settlement_calculator_test.dart` for a documented case where this
 /// heuristic and the true optimum differ.
+///
+/// Requires [balances] to sum to exactly zero (the invariant
+/// [calculateBalances] always guarantees) — a non-zero-sum input can never
+/// fully net out, which would otherwise degenerate to a single leftover
+/// entry settling against itself and loop forever.
 List<Settlement> calculateSettlements(Map<String, int> balances) {
+  final total = balances.values.fold(0, (sum, value) => sum + value);
+  if (total != 0) {
+    throw ArgumentError.value(
+      balances,
+      'balances',
+      'must sum to zero (conservation invariant) — got $total',
+    );
+  }
+
   // Mutable working copy so each step can re-find the current largest
   // creditor/debtor — a partially-settled balance can drop below another
   // untouched one, so the max must be re-picked every iteration rather than

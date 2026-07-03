@@ -4,12 +4,21 @@
 /// count, so handing that remainder out one so'm at a time — to the first
 /// [amount] % n participants, in list order — never loses or duplicates a
 /// so'm: `base * n + remainder * 1 == (amount - remainder) + remainder ==
-/// amount`, for any amount >= 0 and any non-empty participant list.
+/// amount`, for any amount >= 0 and any non-empty participant list. Both
+/// preconditions are enforced below: `~/`/`%` don't cancel out symmetrically
+/// for a negative amount, which would otherwise silently break that
+/// invariant instead of failing.
 Map<String, int> splitEqually(int amount, List<String> participantIds) {
-  assert(
-    participantIds.isNotEmpty,
-    'An expense needs at least one participant.',
-  );
+  if (participantIds.isEmpty) {
+    throw ArgumentError.value(
+      participantIds,
+      'participantIds',
+      'An expense needs at least one participant.',
+    );
+  }
+  if (amount < 0) {
+    throw ArgumentError.value(amount, 'amount', 'must be >= 0');
+  }
   final base = amount ~/ participantIds.length;
   final remainder = amount % participantIds.length;
   return {

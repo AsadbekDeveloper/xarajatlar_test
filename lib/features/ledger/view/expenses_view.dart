@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -46,7 +47,8 @@ class _ExpenseList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LedgerCubit, LedgerState>(
       buildWhen: (prev, curr) =>
-          prev.expenses != curr.expenses || prev.people != curr.people,
+          !listEquals(prev.expenses, curr.expenses) ||
+          !listEquals(prev.people, curr.people),
       builder: (context, state) {
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
@@ -80,6 +82,9 @@ class _ExpenseList extends StatelessWidget {
   void _deleteExpense(BuildContext context, Expense expense) {
     final cubit = context.read<LedgerCubit>();
     final index = cubit.deleteExpense(expense.id);
+    // A rapid double-tap before the tile leaves the tree can fire this
+    // twice for the same expense; the second call finds nothing to delete.
+    if (index == -1) return;
     context.showSuccessToast(
       AppStrings.expenseDeletedMessage,
       action: SnackBarAction(

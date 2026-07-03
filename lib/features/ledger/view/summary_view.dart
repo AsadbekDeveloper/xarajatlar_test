@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,7 +40,8 @@ class _SummaryList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LedgerCubit, LedgerState>(
       buildWhen: (prev, curr) =>
-          prev.expenses != curr.expenses || prev.people != curr.people,
+          !listEquals(prev.expenses, curr.expenses) ||
+          !listEquals(prev.people, curr.people),
       builder: (context, state) {
         final balances = calculateBalances(state.people, state.expenses);
         final settlements = calculateSettlements(balances);

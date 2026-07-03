@@ -57,6 +57,16 @@ void main() {
       // base = 3, remainder = 1 -> only 'a' gets the extra so'm.
       expect(shares, {'a': 4, 'b': 3, 'c': 3});
     });
+
+    test('rejects a negative amount instead of silently corrupting shares', () {
+      // Regression: `~/`/`%` don't cancel out symmetrically for a negative
+      // dividend, so shares would previously not sum to `amount`.
+      expect(() => splitEqually(-100, ['a', 'b']), throwsArgumentError);
+    });
+
+    test('rejects an empty participant list', () {
+      expect(() => splitEqually(100, []), throwsArgumentError);
+    });
   });
 
   group('validateCustomShares', () {

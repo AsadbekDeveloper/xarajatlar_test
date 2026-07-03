@@ -103,6 +103,23 @@ void main() {
     expect(cubit.state.expenses.map((e) => e.title), ['a', 'b']);
   });
 
+  test(
+    'deleting the same expense twice returns -1 the second time, not a stale index',
+    () {
+      final cubit = buildCubit();
+      cubit.addExpense(
+        title: 'a',
+        amount: 1000,
+        payerId: 'a',
+        participantIds: ['a', 'b'],
+      );
+      final id = cubit.state.expenses.single.id;
+
+      expect(cubit.deleteExpense(id), isNot(-1));
+      expect(cubit.deleteExpense(id), -1);
+    },
+  );
+
   test('does not emit after close (isClosed guard)', () async {
     final cubit = buildCubit();
     await cubit.close();

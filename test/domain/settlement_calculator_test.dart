@@ -78,4 +78,17 @@ void main() {
       expectSettlementsConserveBalances(balances, settlements);
     },
   );
+
+  test(
+    'rejects balances that do not sum to zero instead of hanging forever',
+    () {
+      // Regression: this previously looped forever — the last remaining
+      // entry settled against itself with a negative amount that never
+      // reached zero. See the function's doc comment for the invariant.
+      expect(
+        () => calculateSettlements({'a': 5, 'b': -2}),
+        throwsArgumentError,
+      );
+    },
+  );
 }
