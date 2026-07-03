@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xarajatlar_test/features/ledger/widgets/tinted_container.dart';
 
 import '../../../core/app_spacing.dart';
 import '../../../core/app_strings.dart';
@@ -28,10 +29,10 @@ class ExpenseListItem extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return InkWell(
       onTap: onTap,
-      child: Padding(
+      child: TintedContainer(
         padding: const EdgeInsets.symmetric(
-          vertical: AppSpacing.md,
-          horizontal: AppSpacing.lg,
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
         ),
         child: Row(
           children: [

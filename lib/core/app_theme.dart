@@ -52,7 +52,8 @@ class AppTheme {
   const AppTheme._();
 
   static const _primary = Color(0xFF2563EB);
-  static const _scaffoldBackground = Color(0xFFF7F8FA);
+  static const _scaffoldBackground = Color(0xFFE8E9EC);
+  static const _cardBackground = Color(0xFFF5F6F8);
   static const _surface = Color(0xFFFFFFFF);
   static const _textPrimary = Color(0xFF111827);
   static const _textSecondary = Color(0xFF6B7280);
@@ -90,7 +91,7 @@ class AppTheme {
         bodySmall: TextStyle(fontSize: 12, color: _textSecondary),
       ),
       cardTheme: CardThemeData(
-        color: _surface,
+        color: _cardBackground,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
