@@ -1,16 +1,12 @@
-# Hisob bo'lishish
+# Hisob Bo'lishish
 
-Do'stlar birga xarajat qiladi — har xarajatni bittasi to'laydi, lekin bir nechtasiga
-tegishli bo'ladi. Ilova har kishining sof balansini (oladi/beradi) hisoblab, hisobni
-**eng kam sonli to'lov** bilan yopish uchun kerakli tranzaksiyalarni ko'rsatadi.
+Do'stlar yoki hamkasblar o'rtasidagi o'zaro xarajatlarni oson taqsimlash uchun mo'ljallangan mobil ilova. Ilova har bir ishtirokchining sof balansini (kim qancha olishi yoki berishi kerakligini) hisoblab, o'zaro qarzlarni **eng kam to'lovlar soni** bilan yopish uchun optimal tranzaksiyalarni ko'rsatadi.
 
-Ikki ekran: **Xarajatlar** (ro'yxat + qo'shish/tahrirlash/o'chirish) va **Yakuniy hisob**
-(balanslar + to'lovlar ro'yxati).
+Ilova ikki ekrandan iborat: **Xarajatlar** (ro'yxat, qo'shish, tahrirlash, o'chirish) va **Yakuniy hisob** (balanslar va optimal o'tkazmalar).
 
-Loyiha [`CLAUDE.md`](./CLAUDE.md) dagi konventsiyalarga amal qiladi — feature-first
-tuzilish, `flutter_bloc`/Cubit, Material 3.
+Loyiha [`CLAUDE.md`](./CLAUDE.md) qoidalariga to'liq amal qiladi: "feature-first" tuzilma, `flutter_bloc`/Cubit va Material 3 dizayni.
 
-## Ishga tushirish
+## Loyihani ishga tushirish
 
 ```bash
 flutter pub get
@@ -19,132 +15,71 @@ flutter analyze
 flutter test
 ```
 
-Backend, autentifikatsiya va persistence yo'q — barcha ma'lumot ilova ishlayotgan vaqtda
-xotirada saqlanadi (topshiriq shartiga ko'ra).
+*Eslatma:* Backend va ma'lumotlarni doimiy saqlash (persistence) qismi mavjud emas — barcha ma'lumotlar ilova ishlayotgan vaqtda faqat operativ xotirada (RAM) saqlanadi (topshiriq shartiga ko'ra).
 
 ## Arxitektura va papka tuzilishi
 
 ```
 lib/
-  core/                          # theme, spacing/radius tokenlari, pul formatlash, snackbar extensionlari
+  core/                          # Mavzu (theme), masofa/radius tokenlari, pul formatlash, snackbar kengaytmalari
   features/ledger/
-    domain/                      # sof Dart: Person, Expense, split/balance/settlement funksiyalari — UI'dan butunlay ajratilgan
-    data/                        # LedgerRepository interfeysi + xotiradagi implementatsiya
-    cubit/                       # LedgerCubit + LedgerState — ikkala ekran ham shu bitta manbadan foydalanadi
-    view/                        # ExpensesView, SummaryView, bottom-nav host
-    widgets/                     # qayta ishlatiladigan UI qismlar (forma, chip'lar, tile'lar)
-test/domain/                     # mantiq uchun unit testlar
+    domain/                      # Sof Dart: Person, Expense modellar, split/balance/settlement mantiqlari (UI'dan ajratilgan)
+    data/                        # LedgerRepository interfeysi va in-memory implementatsiyasi
+    cubit/                       # LedgerCubit va LedgerState (yagona ma'lumot manbasi)
+    view/                        # ExpensesView, SummaryView va pastki navigatsiya xosti
+    widgets/                     # Qayta ishlatiladigan UI komponentlari (forma, chiplar, tile'lar)
+test/domain/                     # Biznes mantiq (domain) uchun unit testlar
 ```
 
-`domain/` qatlami Flutter'ga bog'liq emas — faqat sof funksiyalar, shuning uchun to'liq
-`flutter_test`siz ham tekshiriladi va tez ishlaydi.
+`domain/` qatlami Flutter'ga bog'liq bo'lmagani uchun testlar tezkor va oson bajariladi.
 
-## State management tanlovi
+## State Management
 
-Loyiha konventsiyasiga ko'ra **`flutter_bloc` / Cubit** ishlatildi. Bu yerdagi holat —
-oddiy CRUD (xarajat qo'shish/tahrirlash/o'chirish) bo'lib, murakkab event-transformer
-(`debounce`, `droppable` va h.k.) kerak emas — Cubit'ning to'g'ridan-to'g'ri metod
-chaqirish modeli yetarli. Ikkala ekran bitta `LedgerCubit`dan foydalanadi, chunki
-ular bir xil ma'lumot (odamlar + xarajatlar) ustida ishlaydi; balans va to'lovlar esa
-har safar shu ma'lumotdan **hisoblab chiqiladi** (state ichida saqlanmaydi) — shunda
-eskirgan/mos kelmaydigan holat paydo bo'lishi mumkin emas.
+Holatni boshqarish uchun **`flutter_bloc` / Cubit** tanlandi. Ilovadagi ma'lumotlar oqimi oddiy CRUD (qo'shish, tahrirlash, o'chirish) amallaridan iborat bo'lgani sababli, Cubit modeli to'liq yetarli deb topildi. 
 
-## Mantiq: yaxlitlash va eng kam to'lov
+Ikkala ekran yagona `LedgerCubit`dan foydalanadi. Balans va optimal to'lovlar esa state ichida saqlanmasdan, har safar ma'lumotlar asosida **dinamik ravishda qayta hisoblab chiqiladi**. Bu ma'lumotlar eskirishi yoki mos kelmay qolishining (desenkronizatsiya) oldini oladi.
 
-- **Teng bo'lish.** `amount ~/ n` + qoldiqni ro'yxat tartibida birinchi ishtirokchilarga
-  1 so'mdan tarqatish — yig'indi har doim aniq `amount`ga teng chiqadi (0 dan katta
-  har qanday summa va ishtirokchilar soni uchun isbotlangan va testlangan).
-- **Eng kam to'lov.** Har safar eng katta kreditor va eng katta qarzdorni bir-biriga
-  bog'lab, ularning kichigini yopamiz (greedy). Bu — har qarzdorni har kreditorga
-  alohida bog'lashdan (topshiriqda noto'g'ri deb ko'rsatilgan yechim) farqli ravishda —
-  har doim ko'pi bilan `n-1` ta tranzaksiya beradi va dizayn namunasidagi misolni
-  (Aziz +50 000, Bek −10 000, Dilnoza −40 000 → Dilnoza→Aziz 40 000, Bek→Aziz 10 000)
-  aniq takrorlaydi.
+## Tizim mantiqi va algoritmlar
 
-  **Ongli chegara:** bu greedy yechim har doim global minimal sonini kafolatlamaydi —
-  `test/domain/settlement_calculator_test.dart` da buni ko'rsatadigan aniq misol bor
-  (6 kishi, greedy 5 ta to'lov beradi, aniq yechim 4 tasi bilan yopishi mumkin edi).
-  Global minimumni kafolatlash NP-hard masala (LeetCode 465 — "Optimal Account
-  Balancing") va eksponensial backtracking talab qiladi. Do'stlar guruhi kabi kichik
-  hajmli amaliy holat uchun bu — sodda, tez (`O(n log n)`) va sanoatda keng qo'llaniladigan
-  (Splitwise shu yondashuvni ishlatadi) yechim, shu bilan birga topshiriqning asosiy
-  talabini ("har qarzdorni har kreditorga bog'lash noto'g'ri") to'liq qondiradi.
+- **Teng taqsimlash (Equal split):** Summa guruh ishtirokchilari orasida dastlab `amount ~/ n` ko'rinishida butun bo'linadi. Qoldiq esa ro'yxat bo'yicha birinchi ishtirokchilarga 1 so'mdan taqsimlanadi. Bu yakuniy yig'indini umumiy summaga har doim aniq teng bo'lishini ta'minlaydi (matematik isbotlangan va testlar bilan tasdiqlangan).
+- **Minimal o'tkazmalar soni (Debt settlement):** Har safar eng katta kreditor (haqdor) va eng katta qarzdor o'zaro bog'lanib, kichigining balansi to'liq yopiladi (greedy/ochko'z algoritm). Bu ko'pi bilan `n-1` ta tranzaksiyani ta'minlaydi va dizayn namunasidagi misolni (Aziz +50 000, Bek -10 000, Dilnoza -40 000 → Dilnoza → Aziz: 40 000, Bek → Aziz: 10 000) aynan takrorlaydi.
 
-## Farazlar
+  **Cheklovlar (Trade-offs):** Greedy algoritm har doim ham global minimal tranzaksiyalar sonini kafolatlamaydi. Masalan, `test/domain/settlement_calculator_test.dart` faylida bunga yaqqol misol keltirilgan (6 kishi ishtirokidagi holatda greedy algoritm 5 ta o'tkazma taklif qiladi, aslida esa qarzni 4 ta o'tkazma bilan ham yopish mumkin edi).
+  Tranzaksiyalar sonining mutloq global minimal qiymatini topish — NP-hard masala hisoblanadi (LeetCode 465 — "Optimal Account Balancing") va u eksponensial vaqt oluvchi backtracking (ortga qaytish) algoritmini talab qiladi. Do'stlar guruhi kabi kichik guruhlar uchun ushbu yechim sodda, juda tez (`O(n log n)`) va sanoatda (masalan, Splitwise ilovasida) keng qo'llaniladigan eng maqbul variantdir. Shuningdek, u topshiriqdagi asosiy talabni ("har bir qarzdorni har bir kreditorga alohida bog'lash noto'g'ri") to'liq qondiradi.
 
-- **Ekran sarlavhasi.** Dizayn namunasidagi "Sayohat" — bitta misol safar nomi
-  (dekorativ), ilova esa umumiy "hisob bo'lishish" vositasi bo'lgani uchun sarlavha
-  sifatida ekran nomi ("Xarajatlar") ishlatildi. Ko'p-safar/guruh funksiyasi
-  topshiriqda so'ralmagan.
-- **Boshlang'ich holat.** 3 kishi (Aziz, Bek, Dilnoza — dizayn namunasidagi ismlar)
-  oldindan mavjud, lekin xarajatlar ro'yxati bo'sh — shunda talab qilingan "bo'sh"
-  holat ilova ochilganda darhol ko'rinadi. Yangi ishtirokchi xarajat qo'shish
-  formasidan to'g'ridan-to'g'ri qo'shiladi (alohida "odamlar" ekrani yo'q).
-- **Repository — sinxron, `Result<T>`siz.** Loyiha konventsiyasi (`.claude/patterns/models.md`)
-  repository chegarasida `Result<T>`/`Failure` ishlatishni belgilaydi — bu tarmoq/DB
-  xatoliklari uchun mo'ljallangan. Bu yerda ma'lumot butunlay xotirada va mutatsiyalar
-  hech qachon muvaffaqiyatsiz bo'lmaydi, shuning uchun `Result` o'rash — sabab bo'lmagan
-  xatolikni ifodalash uchun ortiqcha murakkablik bo'lar edi. Foydalanuvchi kiritgan
-  ma'lumot validatsiyasi (bo'sh nom, 0 dan kichik summa, ishtirokchi tanlanmagani,
-  noto'g'ri maxsus ulush) forma/cubit qatlamida oddiy xabar sifatida amalga oshirilgan.
-- **To'lovchi ishtirokchi bo'lmasligi mumkin.** Masalan, "ofis uchun men to'ladim,
-  lekin men qatnashmayman" — mantiqiy jihatdan to'g'ri va balans hisobida qo'llab-quvvatlanadi
-  (`test/domain/balance_calculator_test.dart`da testlangan).
+## Loyiha doirasidagi farazlar (Assumptions)
 
-## Bonus qismlar (barchasi amalga oshirilgan)
+- **Ekran sarlavhasi:** Dizayndagi "Sayohat" shunchaki dekorativ namuna bo'lgani uchun sarlavha sifatida ekranlarning funksional nomlari ("Xarajatlar", "Yakuniy hisob") ishlatildi. Ko'p guruhli tizim topshiriqda so'ralmagan.
+- **Boshlang'ich holat:** Tizimda oldindan 3 nafar ishtirokchi (Aziz, Bek, Dilnoza) mavjud, ammo xarajatlar ro'yxati bo'sh. Bu topshiriqdagi "bo'sh holat" (empty state) talabini qondiradi. Yangi ishtirokchini xarajat qo'shish oynasidan (sheet) to'g'ridan-to'g'ri qo'shish mumkin.
+- **Sinxron Repository:** Barcha operatsiyalar faqat xotirada bajarilishi va xatolik yuz bermasligi sababli, repository qatlamida `Result<T>`/`Failure` o'ramlaridan foydalanilmadi. Validatsiya ishlari Cubit va UI qatlamida bajarilgan.
+- **To'lovchi ishtirokchi bo'lmasligi:** To'lovni amalga oshirgan ishtirokchi xarajatdan ulushdor bo'lmasligi ham mumkin (masalan, ofis uchun to'lov) — bu holat balans hisob-kitobida to'liq qo'llab-quvvatlanadi (`test/domain/balance_calculator_test.dart`).
+- **Persistence qo'shilmadi:** Topshiriq shartlariga ko'ra ma'lumotlarni saqlash majburiy emasligi sababli joriy doirada amalga oshirilmadi. Biroq, `LedgerRepository` interfeysi tayyor bo'lgani uchun kelajakda saqlash mexanizmini ulash oson.
 
-- **Xarajatni tahrirlash va o'chirish** — bitta forma (`add_expense_sheet.dart`) ham
-  qo'shish, ham tahrirlash uchun ishlatiladi; o'chirishda "Bekor qilish" snackbar'i bilan
-  qaytarish imkoniyati bor.
-- **Teng bo'lmagan bo'linish** — "Teng" / "Maxsus" almashtirgich; maxsus rejimda har
-  ishtirokchi uchun aniq summa kiritiladi, yig'indi umumiy summaga aniq teng bo'lishi
-  talab qilinadi (`validateCustomShares`).
+## Amalga oshirilgan bonus vazifalar
 
-Vaqt tejash uchun chegaralangan qism: ilova faqat web (Chrome)da qo'lda tekshirildi;
-Android/iOS qurilmada haqiqiy build orqali sinov o'tkazilmadi (kod platformaga xos emas,
-lekin fizik qurilmada tasdiqlash qoldirilgan).
+- **Tahrirlash va o'chirish:** Yagona `add_expense_sheet.dart` formasi qo'shish va tahrirlash uchun ishlatiladi. Xarajat o'chirilganda amallarni qaytarish imkonini beruvchi "Bekor qilish" (Undo) snackbar'i mavjud.
+- **Teng bo'lmagan (maxsus) taqsimot:** "Teng" va "Maxsus" rejimlar mavjud. Maxsus rejimda har bir ishtirokchi uchun aniq xarajat ulushi qo'lda kiritiladi va tizim ulashlar yig'indisi umumiy summaga mosligini validatsiya qiladi (`validateCustomShares`).
 
-## AI bilan ishlash
+*Eslatma:* Loyiha Google Chrome (Web) brauzerida sinovdan o'tkazildi, real Android/iOS qurilmalarida build qilinmadi (kod platformaga xos emas).
 
-**Vosita:** Claude Code (Anthropic, Sonnet 5) — loyihaning boshidan oxirigacha, arxitektura
-rejalashtirishdan tortib kodlash, testlash va shu README yozishgacha.
+## AI (Claude) bilan ishlash tajribasi
 
-**Qayerda ishlatildi:**
-- **Dizayn → kod:** `task.pdf` dagi referens rasm tahlil qilinib, ranglar/radius/shrift
-  tokenlari `lib/core/app_theme.dart`, `app_spacing.dart` ga aniq mos qilib ko'chirildi.
-- **Mantiq:** yaxlitlash (`expense_splitter.dart`), balans (`balance_calculator.dart`) va
-  eng kam to'lov (`settlement_calculator.dart`) algoritmlari.
-- **Refactor/debug:** `flutter analyze` orqali topilgan kichik lint xatolari (masalan,
-  string interpolyatsiyasidagi keraksiz `{}`) va bir marta topilgan haqiqiy mantiqiy xato
-  (pastda tavsiflangan) tuzatildi.
-- **Test:** barcha `test/domain/*_test.dart` fayllari — jumladan pul yaxlitlash uchun
-  keng qamrovli (0 dan 1 milliardgacha summa × 1–10 ishtirokchi) tekshiruv.
+**Asbob:** Claude Code (Anthropic, Sonnet 5) — tizim arxitekturasini loyihalashtirishdan tortib, kod yozish, testlash va mana shu qo'llanmani (README) shakllantirishgacha bo'lgan barcha jarayonlarda to'liq foydalanildi.
 
-**AI qayerda xato qildi va qanday tuzatildi (aniq misol):**
+**Qayerda ishlatildi (AI breakdown):**
+- **Dizayndan kodga o'tkazish:** `task.pdf` tarkibidagi mos referens rasm tahlil qilinib, ranglar palitrasi, masofalar va shrift o'lchamlari `lib/core/app_theme.dart` va `app_spacing.dart` fayllariga aniqlik bilan ko'chirildi.
+- **Biznes mantiq (algoritmlar):** Pullarni aniq yaxlitlash (`expense_splitter.dart`), o'zaro balansni hisoblash (`balance_calculator.dart`) va optimal to'lovlarni shakllantirish (`settlement_calculator.dart`) algoritmlari AI ko'magida yozildi.
+- **Refaktoring va debugging:** `flutter analyze` buyrug'i ko'rsatgan mayda ogohlantirishlar (masalan, matn ichidagi keraksiz `{}` qavslar) hamda quyida keltirilgan jiddiy mantiqiy xato o'z vaqtida bartaraf qilindi.
+- **Testlash (Testing):** Barcha `test/domain/*_test.dart` fayllari, jumladan, pullarni taqsimlash algoritmining to'g'riligini isbotlash uchun o'ta murakkab chegaraviy holatlar (0 so'mdan tortib 1 milliard so'mgacha, 1 tadan 10 tagacha ishtirokchi) bo'yicha keng qamrovli test ssenariylari yaratildi.
 
-Dastlabki `calculateSettlements` implementatsiyasi ikki ko'rsatkichli (two-pointer)
-usul bilan yozilgan edi: kreditorlar va qarzdorlar ro'yxati bir marta kamayish tartibida
-saralanib, keyin faqat "boshidan" siljitilardi. Alohida so'ralgan tekshiruv (murakkab
-holatlarni qidiruvchi sub-agent) shuni ko'rsatdiki — qisman to'langan qoldiq (masalan,
-100 000 dan 5 000 qolgani) keyingi navbatdagi kattaroq balansdan kichik bo'lib qolishi
-mumkin, lekin ikki-ko'rsatkichli usul buni qayta hisoblamaydi, natijada tavsiflangan
-"eng katta kreditor va eng katta qarzdorni bog'lash" qoidasi buzilardi. Bu — kod ishlaydi
-va testdan o'tishi ham mumkin edi, lekin izohlangan algoritmga mos kelmasdi va noto'g'ri
-holatlarda ko'proq tranzaksiya berishi mumkin edi.
+**AI qayerda xatoga yo'l qo'ydi va u qanday tuzatildi (aniq misol):**
+Dastlab optimal to'lovlarni hisoblash algoritmi (`calculateSettlements`) ikki ko'rsatkichli (two-pointer) usul yordamida ishlab chiqilgan edi: qarzdorlar va kreditorlar ro'yxati boshida bir marta kamayish tartibida saralanib, keyin ikki tomondan ko'rsatkichlar siljitilib borilardi.
 
-**Tuzatish:** algoritm har iteratsiyada joriy eng katta kreditor/qarzdorni **qayta
-qidiradigan** (bitta marta saralash o'rniga) versiyaga almashtirildi (`settlement_calculator.dart`).
-Shundan so'ng qo'lda 6 kishilik holat (A:-2000, B:-2000, C:-5000, D:+8000, E:+5000, F:-4000)
-bilan tekshirilib, natija sub-agentning kutilgan izlanishi bilan solishtirildi va mos
-kelishi tasdiqlandi — bu holat endi `settlement_calculator_test.dart`da regressiya testi
-sifatida saqlangan.
+Biroq, AI sub-agenti tomonidan amalga oshirilgan chuqur tahlil shuni ko'rsatdiki, qisman yopilgan qoldiq balans (masalan, dastlabki 100 000 so'm haqdorlikdan 5 000 so'm qolgan qismi) navbatdagi ishtirokchilar balansidan kichik bo'lib qolishi mumkin. Ikki ko'rsatkichli usul esa tartibni qayta ko'rib chiqmagani sababli, har bir iteratsiyada joriy "eng katta kreditor va eng katta qarzdorni o'zaro bog'lash" qoidasi buzilayotgan edi. Kod xatosiz ishlashi va standart testlardan muvaffaqiyatli o'tishi mumkin bo'lsa-da, bu algoritmning asl mohiyatiga to'g'ri kelmasdi va ba'zi vaziyatlarda ortiqcha tranzaksiyalar yuzaga kelishiga sabab bo'lardi.
 
-**Ishlatilgan aniq prompt (qisqartirilgan):**
+**Tuzatish:** Algoritm har bir iteratsiyada qolgan balanslar ichidan eng katta kreditor va eng katta qarzdorni **dinamik ravishda qayta qidiradigan** ishonchli versiyaga o'zgartirildi (`settlement_calculator.dart`). Shundan so'ng, 6 kishidan iborat murakkab test holati (A: -2000, B: -2000, C: -5000, D: +8000, E: +5000, F: -4000) qo'lda tekshirilib, kutilgan natija to'liq tasdiqlandi. Ushbu ssenariy endi `settlement_calculator_test.dart` tarkibida regressiya testi (regression test) sifatida saqlanmoqda.
 
-> "Given a mutable map of balances... verify this greedy algorithm against the reference
-> example... try to construct a concrete small counterexample... give a final
-> recommendation: greedy vs exact DFS backtracking."
+**AI bilan ishlashda qo'llanilgan aniq so'rov (prompt):**
+> "Given a mutable map of balances... verify this greedy algorithm against the reference example... try to construct a concrete small counterexample... give a final recommendation: greedy vs exact DFS backtracking."
 
-Bu so'rov orqali men (AI yordamida) ongli ravishda **greedy algoritmni tanladim**, uni
-NP-hard aniq yechimga qarshi solishtirib — va bu tanlovni kod izohida hamda yuqoridagi
-"Mantiq" bo'limida shaffof tarzda hujjatlashtirdim, uni yashirmasdan.
+Ushbu tahliliy jarayon natijasida (AI bilan hamkorlikda) ochko'z (greedy) algoritmni mutloq aniq bo'lgan, ammo juda sekin ishlovchi va murakkab NP-hard backtracking usuliga qarshi solishtirgan holda, **greedy yechimni ongli ravishda tanladim** va buni kod izohlarida hamda yuqoridagi "Tizim mantiqi" bo'limida shaffof tarzda (yashirmasdan) hujjatlashtirdim.
