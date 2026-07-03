@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/app_spacing.dart';
 import '../../../core/app_strings.dart';
+import '../../../core/disposable_controllers_mixin.dart';
 import '../domain/person.dart';
 
 /// Multi-select participant chips plus an inline "add new person" field —
@@ -24,14 +25,9 @@ class ParticipantSelector extends StatefulWidget {
   State<ParticipantSelector> createState() => _ParticipantSelectorState();
 }
 
-class _ParticipantSelectorState extends State<ParticipantSelector> {
-  final _nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
+class _ParticipantSelectorState extends State<ParticipantSelector>
+    with DisposableControllersMixin<ParticipantSelector> {
+  late final _nameController = manageController();
 
   void _toggle(String personId) {
     final updated = Set.of(widget.selectedIds);

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart' show listEquals;
 
 import '../domain/expense.dart';
 import '../domain/person.dart';
@@ -26,3 +27,14 @@ class LedgerState extends Equatable {
   @override
   List<Object?> get props => [people, expenses];
 }
+
+/// `buildWhen`/`listenWhen` predicate: true if [curr].people differs from
+/// [prev].people. Centralized here so every screen that reads people agrees
+/// on what "changed" means.
+bool ledgerPeopleChanged(LedgerState prev, LedgerState curr) =>
+    !listEquals(prev.people, curr.people);
+
+/// `buildWhen` predicate: true if either people or expenses changed.
+bool ledgerDataChanged(LedgerState prev, LedgerState curr) =>
+    ledgerPeopleChanged(prev, curr) ||
+    !listEquals(prev.expenses, curr.expenses);

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -46,9 +45,7 @@ class _ExpenseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LedgerCubit, LedgerState>(
-      buildWhen: (prev, curr) =>
-          !listEquals(prev.expenses, curr.expenses) ||
-          !listEquals(prev.people, curr.people),
+      buildWhen: ledgerDataChanged,
       builder: (context, state) {
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),

@@ -7,6 +7,7 @@ import '../../../core/app_spacing.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/app_theme.dart';
 import '../../../core/context_extensions.dart';
+import '../../../core/disposable_controllers_mixin.dart';
 import '../cubit/ledger_cubit.dart';
 import '../cubit/ledger_state.dart';
 import '../domain/expense.dart';
@@ -42,12 +43,13 @@ class AddExpenseSheet extends StatefulWidget {
   State<AddExpenseSheet> createState() => _AddExpenseSheetState();
 }
 
-class _AddExpenseSheetState extends State<AddExpenseSheet> {
-  late final _titleController = TextEditingController(
-    text: widget.initialExpense?.title ?? '',
+class _AddExpenseSheetState extends State<AddExpenseSheet>
+    with DisposableControllersMixin<AddExpenseSheet> {
+  late final _titleController = manageController(
+    widget.initialExpense?.title ?? '',
   );
-  late final _amountController = TextEditingController(
-    text: widget.initialExpense == null
+  late final _amountController = manageController(
+    widget.initialExpense == null
         ? ''
         : widget.initialExpense!.amount.toString(),
   );
@@ -86,13 +88,6 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
 
   bool _isBeingEdited(Expense expense) =>
       expense.id == widget.initialExpense!.id;
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _amountController.dispose();
-    super.dispose();
-  }
 
   void _setError(String message) => setState(() => _errorMessage = message);
 
@@ -163,7 +158,7 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
           context.showError(AppStrings.expenseNoLongerExists);
           Navigator.of(context).pop();
         },
-        buildWhen: (prev, curr) => !listEquals(prev.people, curr.people),
+        buildWhen: ledgerPeopleChanged,
         builder: (context, state) {
           final people = state.people;
           final selectedParticipants = people

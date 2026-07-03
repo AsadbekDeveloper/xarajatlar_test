@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../core/app_spacing.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/app_theme.dart';
+import '../../../core/disposable_controllers_mixin.dart';
 import '../domain/person.dart';
 
 /// Bonus "teng bo'lmagan bo'linish" (unequal split): one so'm field per
@@ -27,7 +28,8 @@ class CustomSplitEditor extends StatefulWidget {
   State<CustomSplitEditor> createState() => _CustomSplitEditorState();
 }
 
-class _CustomSplitEditorState extends State<CustomSplitEditor> {
+class _CustomSplitEditorState extends State<CustomSplitEditor>
+    with DisposableControllersMixin<CustomSplitEditor> {
   final Map<String, TextEditingController> _controllers = {};
 
   /// Participants who've ever had a controller — so a participant seeds from
@@ -47,19 +49,11 @@ class _CustomSplitEditorState extends State<CustomSplitEditor> {
     _syncControllers();
   }
 
-  @override
-  void dispose() {
-    for (final controller in _controllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
   void _syncControllers() {
     final currentIds = widget.participants.map((person) => person.id).toSet();
     _controllers.removeWhere((id, controller) {
       final shouldRemove = !currentIds.contains(id);
-      if (shouldRemove) controller.dispose();
+      if (shouldRemove) disposeController(controller);
       return shouldRemove;
     });
     for (final person in widget.participants) {
@@ -67,9 +61,7 @@ class _CustomSplitEditorState extends State<CustomSplitEditor> {
         final initial = _everSeenIds.contains(person.id)
             ? null
             : widget.initialShares?[person.id];
-        return TextEditingController(
-          text: initial == null ? '' : initial.toString(),
-        );
+        return manageController(initial == null ? '' : initial.toString());
       });
       _everSeenIds.add(person.id);
     }
