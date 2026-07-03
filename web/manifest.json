@@ -1,0 +1,35 @@
+{
+    "name": "Hisob bo'lishish",
+    "short_name": "Hisob bo'lishish",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#F7F8FA",
+    "theme_color": "#2563EB",
+    "description": "Do'stlar o'rtasidagi xarajatlarni taqsimlash va eng kam to'lov bilan hisobni yopish.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
