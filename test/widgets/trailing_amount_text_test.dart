@@ -25,17 +25,16 @@ void main() {
     expect(find.text('90 000'), findsOneWidget);
   });
 
-  testWidgets(
-    'never truncates the largest allowed amount, at max text scale, '
-    'next to a long label — it shrinks instead of ellipsizing',
-    (tester) async {
-      const largest = '+999 999 999 999';
-      await tester.pumpWidget(wrap(largest, textScale: 1.3));
+  testWidgets('never truncates the largest allowed amount, at max text scale, '
+      'next to a long label — it shrinks instead of ellipsizing', (
+    tester,
+  ) async {
+    const largest = '+999 999 999 999';
+    await tester.pumpWidget(wrap(largest, textScale: 1.3));
 
-      // The full, untruncated string must still be in the tree — a money
-      // value must never lose digits to an ellipsis, unlike a name.
-      expect(find.text(largest), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    },
-  );
+    // The full, untruncated string must still be in the tree — a money
+    // value must never lose digits to an ellipsis, unlike a name.
+    expect(find.text(largest), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

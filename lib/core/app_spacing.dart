@@ -25,9 +25,6 @@ class AppLayout {
   static const maxContentWidth = 480.0;
   static const splitAmountFieldWidth = 120.0;
 
-  /// Cap on a trailing amount/value in a Row next to an Expanded label —
-  /// see TrailingAmountText, which shrinks the value to fit within this
-  /// width (via FittedBox) rather than ellipsizing it, so the sibling label
-  /// always gets the rest of the row without either widget overflowing.
+  /// Max width for a trailing amount value in a Row — see [TrailingAmountText].
   static const trailingValueMaxWidth = 120.0;
 }

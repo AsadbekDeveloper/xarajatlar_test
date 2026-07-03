@@ -104,5 +104,16 @@ void main() {
       final error = validateCustomShares(100000, {'a': 100000}, ['a', 'b']);
       expect(error, isNotNull);
     });
+
+    test('rejects a share map with an extra participant not in the list', () {
+      // Even though the total still matches, a stale entry left over from a
+      // deselected participant must not be accepted silently.
+      final error = validateCustomShares(
+        100000,
+        {'a': 50000, 'b': 50000, 'c': 0},
+        ['a', 'b'],
+      );
+      expect(error, isNotNull);
+    });
   });
 }
